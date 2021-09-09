@@ -4,6 +4,10 @@
 #include <iostream>
 #include <fstream>
 #include <functional>
+#ifdef _WIN64
+#else
+#include <sstream>
+#endif
 
 #define AAALOG(fmt, ...) aaalog(__FILE__, __LINE__, __FUNCTION__, fmt, __VA_ARGS__)
 
@@ -49,8 +53,13 @@ void aaalog(const std::string file, const int line, const std::string func, std:
         /* std::tm‚ÌŒ`®‚É•ÏŠ· */
         std::time_t tt = std::chrono::system_clock::to_time_t(nowtime);
 
+#ifdef _WIN64
         std::tm lt;
         localtime_s(&lt, &tt);
+#else
+        std::tm *plt = localtime( &tt );
+        std::tm &lt = *plt;
+#endif
 
         /* ‚Ì¬”“_’l‚ğ‹‚ß‚é */
         std::chrono::milliseconds ms = std::chrono::duration_cast<std::chrono::milliseconds>(nowtime.time_since_epoch());
